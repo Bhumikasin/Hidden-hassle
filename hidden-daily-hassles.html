@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hidden Daily Hassles</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #faf8f4;
+    --warm-white: #fff9f2;
+    --sand: #f0e8d8;
+    --tan: #e2d4be;
+    --clay: #c8a98a;
+    --terracotta: #d4724a;
+    --rust: #b85c38;
+    --forest: #3d6b5e;
+    --sage: #7fa896;
+    --slate: #4a5568;
+    --ink: #1a1a2e;
+    --text-muted: #8a8070;
+    --shadow-soft: 0 4px 24px rgba(26,26,46,0.07);
+    --shadow-card: 0 2px 12px rgba(26,26,46,0.09);
+    --radius: 18px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Ambient background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(212,114,74,0.10) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+    animation: floatA 12s ease-in-out infinite;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -150px; left: -100px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(61,107,94,0.08) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+    animation: floatB 15s ease-in-out infinite;
+  }
+
+  @keyframes floatA { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-30px,40px)} }
+  @keyframes floatB { 0%,100%{transform:translate(0,0)} 50%{transform:translate(30px,-30px)} }
+
+  /* ── Layout ── */
+  .app-wrapper {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+    position: relative; z-index: 1;
+  }
+
+  /* ── Header ── */
+  header {
+    padding: 48px 0 32px;
+    animation: slideDown 0.7s cubic-bezier(.16,1,.3,1) both;
+  }
+  @keyframes slideDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:none} }
+
+  .header-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--sand); border-radius: 99px;
+    padding: 6px 16px; font-size: 12px; font-weight: 500;
+    color: var(--clay); letter-spacing: 0.04em;
+    text-transform: uppercase; margin-bottom: 18px;
+  }
+  .header-pill .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--terracotta);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700; line-height: 1.1;
+    color: var(--ink); letter-spacing: -0.02em;
+  }
+  h1 em { font-style: italic; color: var(--terracotta); }
+
+  .tagline {
+    margin-top: 10px; font-size: 15px;
+    color: var(--text-muted); font-weight: 400; line-height: 1.6;
+  }
+
+  /* ── Tabs ── */
+  .tabs {
+    display: flex; gap: 4px;
+    background: var(--sand); border-radius: 99px;
+    padding: 5px; margin: 28px 0;
+    animation: fadeUp 0.5s 0.2s both;
+    width: fit-content;
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+
+  .tab-btn {
+    padding: 9px 22px; border: none;
+    background: transparent; border-radius: 99px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 500;
+    color: var(--text-muted); cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .tab-btn.active {
+    background: #fff; color: var(--ink);
+    box-shadow: var(--shadow-card);
+  }
+  .tab-btn:hover:not(.active) { color: var(--ink); }
+
+  /* ── Sections ── */
+  .section { display: none; }
+  .section.active { display: block; animation: sectionIn 0.4s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes sectionIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
+
+  /* ── Input Card ── */
+  .input-card {
+    background: #fff; border-radius: var(--radius);
+    padding: 32px; box-shadow: var(--shadow-soft);
+    border: 1.5px solid var(--tan);
+    margin-bottom: 24px;
+  }
+  .input-label {
+    font-family: 'Fraunces', serif;
+    font-size: 1.3rem; font-weight: 500;
+    color: var(--ink); margin-bottom: 16px;
+  }
+  .input-box {
+    width: 100%; min-height: 88px;
+    border: 1.5px solid var(--tan); border-radius: var(--radius-sm);
+    background: var(--warm-white); padding: 16px;
+    font-family: 'DM Sans', sans-serif; font-size: 15px;
+    color: var(--ink); resize: vertical; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    line-height: 1.6;
+  }
+  .input-box:focus {
+    border-color: var(--terracotta);
+    box-shadow: 0 0 0 3px rgba(212,114,74,0.12);
+  }
+  .input-box::placeholder { color: var(--text-muted); }
+
+  /* Quick options */
+  .quick-label { font-size: 12px; color: var(--text-muted); font-weight: 500; margin: 14px 0 9px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .quick-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    padding: 7px 15px; border-radius: 99px;
+    background: var(--sand); border: 1.5px solid transparent;
+    font-size: 13px; font-weight: 500; color: var(--slate);
+    cursor: pointer; transition: all 0.2s;
+    user-select: none;
+  }
+  .chip:hover { border-color: var(--clay); background: var(--tan); transform: translateY(-1px); }
+  .chip.selected { background: var(--terracotta); color: #fff; border-color: var(--terracotta); }
+
+  .submit-btn {
+    margin-top: 20px; width: 100%;
+    padding: 16px; border: none; border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, var(--terracotta), var(--rust));
+    color: #fff; font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    letter-spacing: 0.01em;
+    transition: all 0.25s ease; position: relative; overflow: hidden;
+  }
+  .submit-btn::after {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(255,255,255,0.15);
+    transform: translateX(-100%);
+    transition: transform 0.4s ease;
+  }
+  .submit-btn:hover::after { transform: translateX(100%); }
+  .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(184,92,56,0.35); }
+  .submit-btn:active { transform: translateY(0); }
+  .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  /* ── Hassle Cards ── */
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem; font-weight: 500;
+    color: var(--ink); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .count-badge {
+    background: var(--sand); color: var(--clay);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px; font-weight: 600;
+    padding: 2px 10px; border-radius: 99px;
+  }
+
+  .hassle-list { display: flex; flex-direction: column; gap: 16px; }
+  .empty-state {
+    text-align: center; padding: 56px 24px;
+    color: var(--text-muted); background: #fff;
+    border-radius: var(--radius); border: 1.5px dashed var(--tan);
+  }
+  .empty-state .icon { font-size: 2.5rem; margin-bottom: 14px; opacity: 0.7; }
+  .empty-state p { font-size: 15px; line-height: 1.6; }
+
+  .hassle-card {
+    background: #fff; border-radius: var(--radius);
+    border: 1.5px solid var(--tan);
+    overflow: hidden; box-shadow: var(--shadow-card);
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: cardSlide 0.45s cubic-bezier(.16,1,.3,1) both;
+  }
+  @keyframes cardSlide { from{opacity:0;transform:translateY(20px) scale(0.98)} to{opacity:1;transform:none} }
+  .hassle-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-soft); }
+
+  .card-header {
+    padding: 18px 20px 14px;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 12px; border-bottom: 1px solid var(--sand);
+  }
+  .card-left { flex: 1; }
+  .card-text { font-size: 15px; font-weight: 500; color: var(--ink); line-height: 1.5; margin-bottom: 8px; }
+  .card-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .category-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 11px; border-radius: 99px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.02em;
+  }
+  .time-tag { font-size: 12px; color: var(--text-muted); }
+
+  .card-body { padding: 16px 20px; }
+  .suggestions-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--clay); margin-bottom: 12px;
+  }
+  .suggestions-list { display: flex; flex-direction: column; gap: 8px; }
+  .suggestion-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 12px; background: var(--warm-white);
+    border-radius: var(--radius-sm); border: 1px solid var(--sand);
+    font-size: 13.5px; color: var(--slate); line-height: 1.5;
+    animation: suggestIn 0.3s ease both;
+  }
+  @keyframes suggestIn { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:none} }
+  .suggestion-item .s-icon { font-size: 15px; margin-top: 1px; flex-shrink: 0; }
+
+  .loading-suggestions {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px; color: var(--text-muted); font-size: 14px;
+  }
+  .spinner {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 2.5px solid var(--tan); border-top-color: var(--terracotta);
+    animation: spin 0.7s linear infinite; flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Category Colors ── */
+  .cat-productivity { background: #fff3e0; color: #e65100; }
+  .cat-time        { background: #e8f5e9; color: #2e7d32; }
+  .cat-health      { background: #fce4ec; color: #c62828; }
+  .cat-social      { background: #e3f2fd; color: #1565c0; }
+  .cat-focus       { background: #ede7f6; color: #4527a0; }
+  .cat-money       { background: #e0f2f1; color: #00695c; }
+  .cat-other       { background: var(--sand); color: var(--clay); }
+
+  /* ── Insights ── */
+  .insight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+  @media(max-width: 540px){ .insight-grid { grid-template-columns: 1fr; } }
+
+  .insight-card {
+    background: #fff; border-radius: var(--radius);
+    padding: 20px; border: 1.5px solid var(--tan);
+    box-shadow: var(--shadow-card);
+  }
+  .insight-icon { font-size: 1.6rem; margin-bottom: 10px; }
+  .insight-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--clay); margin-bottom: 5px; }
+  .insight-value { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 700; color: var(--ink); }
+  .insight-sub { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+
+  .pattern-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+  .pattern-item {
+    background: #fff; border-radius: var(--radius-sm);
+    padding: 16px 18px; border: 1.5px solid var(--tan);
+    display: flex; align-items: center; gap: 14px;
+    animation: fadeUp 0.4s ease both;
+  }
+  .pattern-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .pattern-text { font-size: 14px; color: var(--slate); line-height: 1.5; }
+
+  /* Chart */
+  .chart-card {
+    background: #fff; border-radius: var(--radius);
+    padding: 24px; border: 1.5px solid var(--tan);
+    box-shadow: var(--shadow-card); margin-bottom: 16px;
+  }
+  .chart-title { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 500; margin-bottom: 18px; color: var(--ink); }
+  .bar-chart { display: flex; flex-direction: column; gap: 10px; }
+  .bar-row { display: flex; align-items: center; gap: 12px; }
+  .bar-label { font-size: 13px; color: var(--slate); width: 110px; flex-shrink: 0; display: flex; align-items: center; gap: 6px; }
+  .bar-track { flex: 1; height: 22px; background: var(--sand); border-radius: 99px; overflow: hidden; }
+  .bar-fill {
+    height: 100%; border-radius: 99px;
+    transition: width 0.8s cubic-bezier(.16,1,.3,1);
+    display: flex; align-items: center; justify-content: flex-end; padding-right: 8px;
+  }
+  .bar-num { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.9); }
+
+  /* Streak Banner */
+  .streak-banner {
+    background: linear-gradient(135deg, var(--forest), var(--sage));
+    border-radius: var(--radius); padding: 18px 22px;
+    color: #fff; display: flex; align-items: center; gap: 14px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.5s 0.1s both;
+  }
+  .streak-num { font-family: 'Fraunces', serif; font-size: 2.2rem; font-weight: 700; line-height: 1; }
+  .streak-info { flex: 1; }
+  .streak-info strong { font-size: 14px; font-weight: 600; display: block; }
+  .streak-info span { font-size: 12px; opacity: 0.8; }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--ink); color: #fff; border-radius: 99px;
+    padding: 13px 24px; font-size: 14px; font-weight: 500;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2); z-index: 100;
+    transition: transform 0.4s cubic-bezier(.16,1,.3,1), opacity 0.4s;
+    opacity: 0; white-space: nowrap;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="app-wrapper">
+  <header>
+    <div class="header-pill"><div class="dot"></div> Daily Check-In</div>
+    <h1>Hidden Daily<br><em>Hassles</em></h1>
+    <p class="tagline">Track frustrations. Get smart fixes. See your patterns.</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('home')">✦ Today</button>
+    <button class="tab-btn" onclick="switchTab('log')">Log</button>
+    <button class="tab-btn" onclick="switchTab('insights')">Insights</button>
+  </div>
+
+  <!-- HOME -->
+  <section id="tab-home" class="section active">
+    <div class="input-card">
+      <div class="input-label">What's bothering you today?</div>
+      <textarea id="hassle-input" class="input-box" placeholder="e.g. I keep missing deadlines, feeling overwhelmed with tasks..."></textarea>
+      <div class="quick-label">Quick select</div>
+      <div class="quick-chips">
+        <span class="chip" onclick="selectChip(this)">⏰ Running late</span>
+        <span class="chip" onclick="selectChip(this)">📋 Forgot a task</span>
+        <span class="chip" onclick="selectChip(this)">😵 Too many things to do</span>
+        <span class="chip" onclick="selectChip(this)">😴 Not sleeping well</span>
+        <span class="chip" onclick="selectChip(this)">💸 Overspending</span>
+        <span class="chip" onclick="selectChip(this)">🤯 Hard to focus</span>
+        <span class="chip" onclick="selectChip(this)">😞 Low motivation</span>
+        <span class="chip" onclick="selectChip(this)">📱 Phone distraction</span>
+      </div>
+      <button class="submit-btn" id="submit-btn" onclick="submitHassle()">Get Smart Suggestions →</button>
+    </div>
+  </section>
+
+  <!-- LOG -->
+  <section id="tab-log" class="section">
+    <div class="section-title">
+      Your Hassle Log
+      <span class="count-badge" id="log-count">0</span>
+    </div>
+    <div class="hassle-list" id="hassle-list">
+      <div class="empty-state">
+        <div class="icon">📭</div>
+        <p>No hassles logged yet.<br>Head back to <strong>Today</strong> to add your first one.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSIGHTS -->
+  <section id="tab-insights" class="section">
+    <div id="insights-empty" class="empty-state" style="margin-bottom:0">
+      <div class="icon">🔍</div>
+      <p>Log at least 2 hassles to see<br>your personal patterns emerge.</p>
+    </div>
+    <div id="insights-content" style="display:none">
+      <div id="streak-banner" class="streak-banner">
+        <div class="streak-num" id="streak-num">0</div>
+        <div class="streak-info">
+          <strong>Hassles Logged</strong>
+          <span id="streak-sub">Keep tracking to unlock patterns</span>
+        </div>
+        <span style="font-size:2rem">🎯</span>
+      </div>
+
+      <div class="insight-grid" id="insight-grid"></div>
+
+      <div class="chart-card">
+        <div class="chart-title">Hassle Breakdown by Category</div>
+        <div class="bar-chart" id="bar-chart"></div>
+      </div>
+
+      <div class="section-title" style="margin-top:8px">💡 Pattern Insights</div>
+      <div class="pattern-list" id="pattern-list"></div>
+    </div>
+  </section>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── State ──
+let hassles = JSON.parse(localStorage.getItem('hdh_hassles') || '[]');
+
+const CATEGORIES = {
+  productivity: { label: 'Productivity', icon: '⚡', color: '#ff6f00', cls: 'cat-productivity', barColor: '#ff8f00' },
+  time:         { label: 'Time Mgmt',   icon: '⏰', color: '#2e7d32', cls: 'cat-time',         barColor: '#43a047' },
+  health:       { label: 'Health',      icon: '💚', color: '#c62828', cls: 'cat-health',       barColor: '#e53935' },
+  social:       { label: 'Social',      icon: '👥', color: '#1565c0', cls: 'cat-social',       barColor: '#1e88e5' },
+  focus:        { label: 'Focus',       icon: '🎯', color: '#4527a0', cls: 'cat-focus',        barColor: '#7e57c2' },
+  money:        { label: 'Money',       icon: '💸', color: '#00695c', cls: 'cat-money',        barColor: '#26a69a' },
+  other:        { label: 'Other',       icon: '✦',  color: '#c8a98a', cls: 'cat-other',        barColor: '#d4b896' },
+};
+
+// ── Helpers ──
+function save() { localStorage.setItem('hdh_hassles', JSON.stringify(hassles)); }
+
+function showToast(msg, icon = '✓') {
+  const t = document.getElementById('toast');
+  t.innerHTML = `<span>${icon}</span> ${msg}`;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.classList.toggle('active', ['home','log','insights'][i] === name);
+  });
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'log') renderLog();
+  if (name === 'insights') renderInsights();
+}
+
+function selectChip(el) {
+  const clean = el.textContent.replace(/^[\p{Emoji}\s]+/u, '').trim();
+  document.getElementById('hassle-input').value = clean;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function timeAgo(ts) {
+  const diff = Date.now() - ts;
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return 'Just now';
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+// ── AI via Anthropic ──
+async function callAI(prompt) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  const data = await res.json();
+  return data.content.map(b => b.text || '').join('');
+}
+
+async function classifyAndSuggest(text) {
+  const prompt = `You are a helpful life coach for students and young professionals. Given this daily frustration: "${text}"
+
+Respond ONLY with valid JSON (no markdown, no explanation):
+{
+  "category": one of [productivity, time, health, social, focus, money, other],
+  "suggestions": [
+    {"icon": "emoji", "text": "short actionable tip under 12 words"},
+    {"icon": "emoji", "text": "short actionable tip under 12 words"},
+    {"icon": "emoji", "text": "short actionable tip under 12 words"}
+  ]
+}`;
+  const raw = await callAI(prompt);
+  try {
+    const clean = raw.replace(/```json|```/g, '').trim();
+    return JSON.parse(clean);
+  } catch {
+    return {
+      category: 'other',
+      suggestions: [
+        { icon: '🎯', text: 'Break the problem into one small step' },
+        { icon: '📝', text: 'Write it down to clear your head' },
+        { icon: '🔄', text: 'Talk to someone you trust about it' }
+      ]
+    };
+  }
+}
+
+async function generateInsightText(hassles) {
+  const summary = hassles.map(h => h.text).join('; ');
+  const prompt = `Based on these daily frustrations a student/young professional is having: "${summary}"
+
+Generate 3 concise, empathetic pattern insights. Respond ONLY with JSON array (no markdown):
+[
+  "insight sentence 1",
+  "insight sentence 2",
+  "insight sentence 3"
+]`;
+  const raw = await callAI(prompt);
+  try {
+    const clean = raw.replace(/```json|```/g, '').trim();
+    return JSON.parse(clean);
+  } catch {
+    return [
+      "You're dealing with multiple overlapping stressors",
+      "Time and focus seem to be recurring themes",
+      "Small consistent habits could reduce these frustrations"
+    ];
+  }
+}
+
+// ── Submit ──
+async function submitHassle() {
+  const input = document.getElementById('hassle-input');
+  const text = input.value.trim();
+  if (!text) { showToast('Tell me what\'s bothering you 👆', '💬'); return; }
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Analyzing...';
+
+  try {
+    const { category, suggestions } = await classifyAndSuggest(text);
+    const entry = { id: Date.now(), text, ts: Date.now(), category, suggestions };
+    hassles.unshift(entry);
+    save();
+
+    input.value = '';
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+    showToast('Hassle logged with suggestions!', '✨');
+    switchTab('log');
+  } catch(e) {
+    showToast('Saved! AI offline – using defaults.', '📌');
+    const entry = {
+      id: Date.now(), text, ts: Date.now(), category: 'other',
+      suggestions: [
+        { icon: '🎯', text: 'Break it into smaller steps' },
+        { icon: '📅', text: 'Schedule time to address it' },
+        { icon: '💬', text: 'Talk it through with someone' }
+      ]
+    };
+    hassles.unshift(entry);
+    save();
+    input.value = '';
+    switchTab('log');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Get Smart Suggestions →';
+  }
+}
+
+// ── Render Log ──
+function renderLog() {
+  const list = document.getElementById('hassle-list');
+  document.getElementById('log-count').textContent = hassles.length;
+
+  if (!hassles.length) {
+    list.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>No hassles logged yet.<br>Head back to <strong>Today</strong> to add your first one.</p></div>`;
+    return;
+  }
+
+  list.innerHTML = hassles.map((h, i) => {
+    const cat = CATEGORIES[h.category] || CATEGORIES.other;
+    const suggestions = (h.suggestions || []).map((s, si) => `
+      <div class="suggestion-item" style="animation-delay:${si * 0.07}s">
+        <span class="s-icon">${s.icon}</span>
+        <span>${s.text}</span>
+      </div>`).join('');
+
+    return `
+    <div class="hassle-card" style="animation-delay:${i * 0.06}s">
+      <div class="card-header">
+        <div class="card-left">
+          <div class="card-text">${h.text}</div>
+          <div class="card-meta">
+            <span class="category-tag ${cat.cls}">${cat.icon} ${cat.label}</span>
+            <span class="time-tag">${timeAgo(h.ts)}</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="suggestions-label">💡 Suggested fixes</div>
+        <div class="suggestions-list">${suggestions}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Render Insights ──
+async function renderInsights() {
+  const empty = document.getElementById('insights-empty');
+  const content = document.getElementById('insights-content');
+
+  if (hassles.length < 2) {
+    empty.style.display = 'block';
+    content.style.display = 'none';
+    return;
+  }
+  empty.style.display = 'none';
+  content.style.display = 'block';
+
+  // Streak
+  document.getElementById('streak-num').textContent = hassles.length;
+  document.getElementById('streak-sub').textContent =
+    hassles.length >= 5 ? 'Strong tracking habit! 🔥' : 'Building momentum...';
+
+  // Category counts
+  const counts = {};
+  hassles.forEach(h => { counts[h.category] = (counts[h.category] || 0) + 1; });
+  const topCat = Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+  const topCatInfo = CATEGORIES[topCat[0]] || CATEGORIES.other;
+
+  // Stat cards
+  document.getElementById('insight-grid').innerHTML = `
+    <div class="insight-card">
+      <div class="insight-icon">📊</div>
+      <div class="insight-title">Top Category</div>
+      <div class="insight-value">${topCatInfo.icon} ${topCatInfo.label}</div>
+      <div class="insight-sub">${topCat[1]} of ${hassles.length} hassles</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-icon">📅</div>
+      <div class="insight-title">Latest Entry</div>
+      <div class="insight-value">${timeAgo(hassles[0].ts)}</div>
+      <div class="insight-sub">Most recent hassle logged</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-icon">🧩</div>
+      <div class="insight-title">Categories</div>
+      <div class="insight-value">${Object.keys(counts).length}</div>
+      <div class="insight-sub">Distinct hassle types</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-icon">✅</div>
+      <div class="insight-title">Suggestions</div>
+      <div class="insight-value">${hassles.length * 3}</div>
+      <div class="insight-sub">AI fixes generated so far</div>
+    </div>`;
+
+  // Bar chart
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  const max = sorted[0][1];
+  document.getElementById('bar-chart').innerHTML = sorted.map(([cat, n]) => {
+    const info = CATEGORIES[cat] || CATEGORIES.other;
+    const pct = Math.round((n / max) * 100);
+    return `
+    <div class="bar-row">
+      <div class="bar-label">${info.icon} ${info.label}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${pct}%; background:${info.barColor}">
+          ${n >= 2 ? `<span class="bar-num">${n}</span>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  // Trigger animation after paint
+  setTimeout(() => {
+    document.querySelectorAll('.bar-fill').forEach(el => {
+      const w = el.style.width; el.style.width = '0';
+      requestAnimationFrame(() => { el.style.width = w; });
+    });
+  }, 50);
+
+  // AI Patterns
+  const patternList = document.getElementById('pattern-list');
+  patternList.innerHTML = `<div class="loading-suggestions"><div class="spinner"></div> Analyzing your patterns...</div>`;
+  const patternColors = ['#d4724a','#3d6b5e','#7e57c2','#1e88e5'];
+  try {
+    const insights = await generateInsightText(hassles.slice(0, 10));
+    patternList.innerHTML = insights.map((txt, i) => `
+      <div class="pattern-item" style="animation-delay:${i*0.1}s">
+        <div class="pattern-dot" style="background:${patternColors[i % patternColors.length]}"></div>
+        <div class="pattern-text">${txt}</div>
+      </div>`).join('');
+  } catch {
+    patternList.innerHTML = `
+      <div class="pattern-item"><div class="pattern-dot" style="background:#d4724a"></div><div class="pattern-text">You're experiencing recurring daily friction — awareness is the first step.</div></div>
+      <div class="pattern-item"><div class="pattern-dot" style="background:#3d6b5e"></div><div class="pattern-text">Most of your hassles are linked to time and energy management.</div></div>
+      <div class="pattern-item"><div class="pattern-dot" style="background:#7e57c2"></div><div class="pattern-text">Small consistent habits could significantly reduce these frustrations.</div></div>`;
+  }
+}
+
+// Init
+renderLog();
+
+// Allow Enter to submit
+document.getElementById('hassle-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.metaKey) submitHassle();
+});
+</script>
+</body>
+</html>
